@@ -18,10 +18,11 @@ nnf (Not (Or f1 f2)) = And (nnf (Not f1)) (nnf (Not f2))
 cnf :: Formula -> Formula
 cnf (Var x) = Var x
 cnf (Not (Var x)) = Not (Var x)
+-- Recursively apply cnf to the insides of normal ANDs/ORs:
 cnf (And f1 f2) = And (cnf f1) (cnf f2)
 cnf (Or f1 f2) = distrib (cnf f1) (cnf f2)
 
--- Takes two CNF formulas and mathematically forces them together using the distributive property.
+-- Takes two CNF formulas and forces them together using the distributive property.
 distrib :: Formula -> Formula -> Formula
 distrib (And g1 g2) f = And (distrib g1 f) (distrib g2 f)
 distrib f (And g1 g2) = And (distrib f g1) (distrib f g2)
