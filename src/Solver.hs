@@ -25,3 +25,17 @@ getVars (Var x)     = [x]
 getVars (Not f)     = getVars f
 getVars (And f1 f2) = nub $ getVars f1 ++ getVars f2
 getVars (Or f1 f2)  = nub $ getVars f1 ++ getVars f2
+
+-- Takes a list of variables and generates every possible combination of True and False with them
+genAssignments :: [String] -> [Assignment]
+genAssignments [] = [[]]
+genAssignments (v:vs) = [ (v, val) : rest | val <- [True, False], rest <- genAssignments vs ]
+
+-- Takes a formula and generates a list of Assignments take makes the Formula evaluate to true
+solve :: Formula -> [Assignment]
+solve formula = 
+    let
+        vars = getVars formula
+        assignments = genAssignments vars
+    in
+        filter (\assign -> eval assign formula) assignments
