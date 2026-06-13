@@ -1,6 +1,7 @@
 module Solver where
 
 import Formula
+import Data.List (nub)
 
 -- Type that holds the variables from a Formula data type (as a String) with their value (a Bool)
 type Assignment = [(String, Bool)]
