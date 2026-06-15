@@ -4,6 +4,7 @@ module Formula (
 
 data Formula
     = Var String
+    | Value Bool
     | Not Formula
     | And Formula Formula
     | Or Formula Formula
