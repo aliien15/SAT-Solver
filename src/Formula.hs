@@ -8,4 +8,4 @@ data Formula
     | Not Formula
     | And Formula Formula
     | Or Formula Formula
-    deriving (Show, Eq)
+    deriving (Show, Eq, Read)

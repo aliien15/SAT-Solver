@@ -4,6 +4,7 @@ import Test.QuickCheck
 import Formula (Formula(..))
 import Normalize
 import Solver
+import TestUtils
 
 -- Logic that handles the generation of random Formulas
 instance Arbitrary Formula where
