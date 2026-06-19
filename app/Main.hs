@@ -5,6 +5,42 @@ import Normalize
 import Solver
 import Text.Read (readMaybe)
 import System.Exit (exitSuccess)
+import System.CPUTime
+import Text.Printf
+
+import Control.Exception (evaluate)
+import Control.Monad (forM_)
+import Data.IORef
+
+-- Default formulas used for the performance benchmarks
+quickFormula :: Formula
+quickFormula = 
+    And (Or (Var "A") (Var "B")) 
+        (And (Not (Var "A")) 
+             (Or (Var "C") (And (Var "D") (Var "E"))))
+
+pigeonholeFormula :: Formula
+pigeonholeFormula =
+    And (Or (Var "P11") (Var "P12"))
+    (And (Or (Var "P21") (Var "P22"))
+    (And (Or (Var "P31") (Var "P32"))
+    (And (Not (And (Var "P11") (Var "P21")))
+    (And (Not (And (Var "P11") (Var "P31")))
+    (And (Not (And (Var "P21") (Var "P31")))
+    (And (Not (And (Var "P12") (Var "P22")))
+    (And (Not (And (Var "P12") (Var "P32")))
+         (Not (And (Var "P22") (Var "P32"))))))))))
+
+nightmareFormula :: Formula
+nightmareFormula = 
+    And (Or (Not (Var "A")) (Or (Not (Var "B")) (Var "C"))) 
+    (And (Or (Var "A") (Or (Not (Var "B")) (Var "C"))) 
+    (And (Or (Not (Var "A")) (Or (Var "B") (Var "C"))) 
+    (And (Or (Var "A") (Or (Var "B") (Not (Var "C")))) 
+    (And (Or (Not (Var "A")) (Or (Not (Var "B")) (Not (Var "C")))) 
+    (And (Or (Var "A") (Or (Not (Var "B")) (Not (Var "C")))) 
+    (And (Or (Not (Var "A")) (Or (Var "B") (Not (Var "C")))) 
+         (Or (Var "A") (Or (Var "B") (Var "C")))))))))
 
 -- Main function: Parses the arguments and calls the corresponding mode function
 main :: IO ()
@@ -20,11 +56,10 @@ main = do
             runSolver
             main
         2 -> do
-            -- runPerformanceBenchMark
-            putStrLn "This option is not available yet :("
+            runPerformanceBenchMark
             main
         3 -> do
-            putStrLn "Shutting down, goodbye!"
+            putStrLn "\nShutting down, goodbye!"
             exitSuccess
 
 -- Function that keeps asking the user for an input until it is valid
@@ -70,3 +105,37 @@ runSolver = do
         Nothing -> do
             putStrLn "\n[Syntax Error] Make sure you are using exact capitalization and parentheses!"
             runSolver
+
+-- Function that runs all the performance testing logic
+runPerformanceBenchMark :: IO ()
+runPerformanceBenchMark = do
+    putStrLn "\n=== Performance Benchmark ==="
+    putStrLn "1. Quick Test (Satisfiable - 5 Variables)"
+    putStrLn "2. Deep Backtracking (Unsatisfiable - Pigeonhole Principle)"
+    putStrLn "3. The Nightmare (Symmetric Conflict - Extreme Backtracking)"
+    putStrLn "4. Cancel"
+    
+    choice <- getValue (1, 4) "Select a benchmark tier: "
+    case choice of
+        1 -> runTimedBenchmark "Quick Test" quickFormula
+        2 -> runTimedBenchmark "Pigeonhole" pigeonholeFormula
+        3 -> runTimedBenchmark "The Nightmare" nightmareFormula
+        4 -> putStrLn "Returning to Main Menu...\n"
+
+-- Solves a formula and prints the time it took in seconds
+runTimedBenchmark :: String -> Formula -> IO ()
+runTimedBenchmark name f = do
+    putStrLn $ "\nRunning " ++ name ++ "..."
+    
+    start <- getCPUTime
+    
+    -- evaluate forces the pure calculation to happen inside the IO boundary
+    _ <- evaluate (dpll (cnf (nnf f)))
+    
+    end <- getCPUTime
+    
+    let diff = fromIntegral (end - start) / (1e12) :: Double
+    let finalResult = dpll (cnf (nnf f))
+    
+    putStrLn $ "Result: " ++ if finalResult then "SATISFIABLE" else "UNSATISFIABLE"
+    printf "Execution Time: %0.12f seconds\n\n" diff
