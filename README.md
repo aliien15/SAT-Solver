@@ -44,7 +44,7 @@ curl --proto '=https' --tlsv1.2 -sSf [https://get-ghcup.haskell.org](https://get
 ### Building the Project
 1. Clone the repository:
 ```bash
-git clone [https://github.com/aliien15/SAT-Solver.git](https://github.com/aliien15/SAT-Solver.git)
+git clone https://github.com/aliien15/SAT-Solver.git
 cd sat-solver
 ```
 2. Compile the executable using Cabal:
