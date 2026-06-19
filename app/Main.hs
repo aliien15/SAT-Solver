@@ -3,7 +3,6 @@ module Main where
 import Formula
 import Normalize
 import Solver
-import System.Environment (getArgs)
 import Text.Read (readMaybe)
 import System.Exit (exitSuccess)
 
@@ -24,20 +23,20 @@ main = do
             -- runPerformanceBenchMark
             putStrLn "This option is not available yet :("
             main
-        3 -> 
+        3 -> do
             putStrLn "Shutting down, goodbye!"
             exitSuccess
 
 -- Function that keeps asking the user for an input until it is valid
 getValue :: (Int, Int) -> String -> IO Int
-getValue (min, max) msg = do
+getValue (minValue, maxValue) msg = do
     putStrLn msg
     input <- getLine
     case readMaybe input :: Maybe Int of
-        Just v | v >= min && v <= max -> return v
+        Just v | v >= minValue && v <= maxValue -> return v
         _ -> do
-            putStrLn $ "Invalid value! Enter a number between " ++ show min ++ " and " ++ show max ++ "!"
-            getValue (min, max) msg
+            putStrLn $ "Invalid value! Enter a number between " ++ show minValue ++ " and " ++ show maxValue ++ "!"
+            getValue (minValue, maxValue) msg
 
 -- Function that runs all the formula solving logic
 runSolver :: IO ()
@@ -54,10 +53,10 @@ runSolver = do
         then putStrLn "Returning to the main menu...\n"
     else case readMaybe input :: Maybe Formula of
         Just formula -> do
-            putStrLn "Analyzing your formula..."
+            putStrLn "\nAnalyzing your formula..."
 
             let isSatisfiable = dpll $ cnf $ nnf formula
-            putStrLn $ "Result: " ++ if isSatisfiable then "SATISFIABLE" else "UNSATISFIABLE"
+            putStrLn $ "\nResult: " ++ if isSatisfiable then "SATISFIABLE\n" else "UNSATISFIABLE\n"
 
             runAgain <- getValue (1, 3) "Do you want to try another formula?\n1. Yes!\n2. No, exit to main menu!\n3. No, exit the program!"
             case runAgain of
