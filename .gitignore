@@ -1,0 +1,21 @@
+# Build artifacts
+dist-newstyle/
+.stack-work/
+.ghc.environment.*
+
+# GHC intermediate files
+*.o
+*.hi
+*.hie
+*.chi
+*.chs.h
+*.dyn_o
+*.dyn_hi
+
+# Executables
+/bin/
+
+# Local configuration overrides
+cabal.project.local
+cabal.project.local~
+cabal.project.rescan

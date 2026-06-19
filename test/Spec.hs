@@ -1,40 +1,10 @@
-module Spec where
+module Main where
 
 import Test.QuickCheck
-import Formula (Formula(..))
+import Formula
 import Normalize
-import Solver
+import Solver ()
 import TestUtils
-
--- Logic that handles the generation of random Formulas
-instance Arbitrary Formula where
-    arbitrary :: Gen Formula
-    arbitrary = sized formulaSized
-
--- Helper function for the Arbitrary instance of Formulas
-formulaSized :: Int -> Gen Formula
-formulaSized 0 = do
-    name <- elements ["A", "B", "C", "D", "E"]
-    return $ Var name
-formulaSized n =
-    frequency
-    [
-        (3, formulaSized 0),
-        (1, do
-            let newSize = n - 1
-            f <- formulaSized newSize
-            return $ Not f),
-        (1, do
-            let halfSize = n `div` 2
-            firstFormula <- formulaSized halfSize
-            secondFormula <- formulaSized halfSize
-            return $ And firstFormula secondFormula),
-        (1, do
-            let halfSize = n `div` 2
-            firstFormula <- formulaSized halfSize
-            secondFormula <- formulaSized halfSize
-            return $ Or firstFormula secondFormula)
-    ]
 
 -- Checks if every set of solutions (Assignments) is valid
 prop_solverValid :: Formula -> Bool
@@ -57,3 +27,19 @@ prop_normalization f = normalizedSolution && originalSolution
         
         -- Prove the normalizer didn't delete valid solutions
         originalSolution = all (\assign -> eval assign normalized) (solve f)
+
+-- Main entry point to run the tests
+main :: IO ()
+main = do
+    putStrLn "\n=== Running SAT Solver Property Tests ==="
+    
+    putStrLn "Testing Solver Validity..."
+    quickCheck prop_solverValid
+    
+    putStrLn "\nTesting Contradiction Handling..."
+    quickCheck prop_contradiction
+    
+    putStrLn "\nTesting Normalization Equivalence..."
+    quickCheck prop_normalization
+    
+    putStrLn "=== All tests completed! ===\n"

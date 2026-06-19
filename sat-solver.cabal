@@ -1,0 +1,41 @@
+cabal-version:      3.0
+name:               sat-solver
+version:            0.1.0.0
+license:            MIT
+license-file:       LICENSE
+author:             Aliien15
+maintainer:         andrevazesilva@gmail.com
+build-type:         Simple
+
+common warnings
+    ghc-options: -Wall
+
+-- Library has NO external dependencies other than base
+library
+    import:           warnings
+    exposed-modules:  Formula, Normalize, Solver
+    hs-source-dirs:   src
+    build-depends:    base ^>=4.18.3.0, 
+                      QuickCheck
+    default-language: Haskell2010
+
+-- Executable depends on the library
+executable sat-solver
+    import:           warnings
+    main-is:          Main.hs
+    hs-source-dirs:   app
+    build-depends:    base ^>=4.18.3.0, 
+                      sat-solver
+    default-language: Haskell2010
+
+-- Test-suite depends on the library AND QuickCheck
+test-suite sat-solver-test
+    import:           warnings
+    type:             exitcode-stdio-1.0
+    main-is:          Spec.hs
+    other-modules:    TestUtils
+    hs-source-dirs:   test
+    build-depends:    base ^>=4.18.3.0, 
+                      sat-solver, 
+                      QuickCheck
+    default-language: Haskell2010
