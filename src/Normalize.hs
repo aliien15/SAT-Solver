@@ -4,17 +4,21 @@ import Formula
 
 -- NNF (negation normal form) pushes all the Nots as far down the tree as possible, so they only attach directly to variables (e.g., Not (Var "A")).
 nnf :: Formula -> Formula
-nnf (Var x)           = Var x
-nnf (Value b)         = Value b
-nnf (Not (Value b))   = Value (not b)
-nnf (Not (Var x))     = Not (Var x)
-nnf (Not (Not f))     = nnf f
+nnf (Var x)               = Var x
+nnf (Value b)             = Value b
+nnf (Not (Value b))       = Value (not b)
+nnf (Not (Var x))         = Not (Var x)
+nnf (Not (Not f))         = nnf f
+nnf (Implies f1 f2)       = nnf $ Or (Not f1) f2
+nnf (Not (Implies f1 f2)) = nnf (And f1 (Not f2))
+nnf (Iff f1 f2)           = nnf $ And (Implies f1 f2) (Implies f2 f1)
+nnf (Not (Iff f1 f2))     = nnf (Or (And f1 (Not f2)) (And f2 (Not f1)))
 -- Recursively apply nnf to the insides of normal ANDs/ORs:
-nnf (And f1 f2)       = And (nnf f1) (nnf f2)
-nnf (Or f1 f2)        = Or (nnf f1) (nnf f2)
+nnf (And f1 f2)           = And (nnf f1) (nnf f2)
+nnf (Or f1 f2)            = Or (nnf f1) (nnf f2)
 -- De Morgan
-nnf (Not (And f1 f2)) = Or (nnf (Not f1)) (nnf (Not f2))
-nnf (Not (Or f1 f2))  = And (nnf (Not f1)) (nnf (Not f2))
+nnf (Not (And f1 f2))     = Or (nnf (Not f1)) (nnf (Not f2))
+nnf (Not (Or f1 f2))      = And (nnf (Not f1)) (nnf (Not f2))
 
 -- CNF (conjuctive normal form) pushes all the Ors downwards so they sit exclusively underneath the Ands.
 -- The formula must be in NNF before passing through this

@@ -20,10 +20,12 @@ lookupVar x assign = case lookup x assign of
 -- Evaluates whether a Formula can be true or not based on an assignment
 eval :: Assignment -> Formula -> Bool
 eval _ (Value b) = b
-eval assign (Var x)     = lookupVar x assign
-eval assign (Not f)     = not $ eval assign f
-eval assign (And f1 f2) = eval assign f1 && eval assign f2
-eval assign (Or f1 f2)  = eval assign f1 || eval assign f2
+eval assign (Var x)         = lookupVar x assign
+eval assign (Not f)         = not $ eval assign f
+eval assign (And f1 f2)     = eval assign f1 && eval assign f2
+eval assign (Or f1 f2)      = eval assign f1 || eval assign f2
+eval assign (Implies f1 f2) = not (eval assign f1) || eval assign f2
+eval assign (Iff f1 f2)     = eval assign f1 == eval assign f2
 
 -- Takes a list of variables and generates every possible combination of True and False with them
 genAssignments :: [String] -> [Assignment]

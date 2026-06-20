@@ -10,6 +10,8 @@ data Formula
     | Not Formula
     | And Formula Formula
     | Or Formula Formula
+    | Implies Formula Formula
+    | Iff Formula Formula
     deriving (Show, Eq, Read)
 
 -- Logic that handles the generation of random Formulas
@@ -24,7 +26,7 @@ formulaSized 0 = do
 formulaSized n =
     frequency
     [
-        (3, formulaSized 0),
+        (4, formulaSized 0),
         (1, do
             let newSize = n - 1
             f <- formulaSized newSize
@@ -38,5 +40,15 @@ formulaSized n =
             let halfSize = n `div` 2
             firstFormula <- formulaSized halfSize
             secondFormula <- formulaSized halfSize
-            return $ Or firstFormula secondFormula)
+            return $ Or firstFormula secondFormula),
+        (1, do
+            let halfSize = n `div` 2
+            firstFormula <- formulaSized halfSize
+            secondFormula <- formulaSized halfSize
+            return $ Implies firstFormula secondFormula),
+        (1, do
+            let halfSize = n `div` 2
+            firstFormula <- formulaSized halfSize
+            secondFormula <- formulaSized halfSize
+            return $ Iff firstFormula secondFormula)
     ]

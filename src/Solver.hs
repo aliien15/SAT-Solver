@@ -10,6 +10,8 @@ getVars (Var x)     = [x]
 getVars (Not f)     = getVars f
 getVars (And f1 f2) = nub $ getVars f1 ++ getVars f2
 getVars (Or f1 f2)  = nub $ getVars f1 ++ getVars f2
+getVars (Implies f1 f2) = nub $ getVars f1 ++ getVars f2
+getVars (Iff f1 f2) = nub $ getVars f1 ++ getVars f2
 getVars (Value _)   = []
 
 -- Takes a Formula, and replaces a certain variable with its value ("True" or "False")
