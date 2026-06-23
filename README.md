@@ -38,7 +38,7 @@ The architecture strictly separates the execution pipeline, data transformation,
 You will need the **Glasgow Haskell Compiler (GHC)** and a build tool like **Cabal** or **Stack** installed on your machine.
 The easiest way to get these is via [GHCup](https://www.haskell.org/ghcup/):
 ```bash
-curl --proto '=https' --tlsv1.2 -sSf [https://get-ghcup.haskell.org](https://get-ghcup.haskell.org) | sh
+curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
 ```
 
 ### Building the Project
